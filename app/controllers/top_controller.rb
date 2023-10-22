@@ -8,10 +8,18 @@ class TopController < ApplicationController
   end
 
   def login
-    logger.debug params[:uid]
-    if params[:uid] == 'kindai' and params[:pass] == 'sanriko'
+    user = User.find_by(uid: params[:uid])
+    if user && BCrypt::Password.new(user.pass) == params[:pass]
       session[:login_uid] = params[:uid]
       redirect_to top_main_path
+    else
+      render "error"
     end
+  end
+
+
+  def logout
+    session.delete(:login_uid)
+    redirect_to top_main_path
   end
 end
